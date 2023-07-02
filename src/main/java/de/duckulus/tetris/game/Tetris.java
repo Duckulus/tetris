@@ -11,7 +11,7 @@ public class Tetris {
 
     public Tetris() {
         board = new boolean[Constants.WIDTH * Constants.HEIGHT];
-        currentPiece = new Piece(PieceKind.T, Vec2.of(5, 10));
+        currentPiece = new Piece(PieceKind.Z, Vec2.of(5, 0));
     }
 
     public void gravityStep() {
