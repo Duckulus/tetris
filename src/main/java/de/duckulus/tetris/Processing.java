@@ -18,6 +18,8 @@ public class Processing extends PApplet {
     private Tetris game;
     private Timer timer;
     private boolean paused = false;
+    private boolean showGrid = true;
+    private boolean showNext = true;
 
     @Override
     public void settings() {
@@ -26,6 +28,7 @@ public class Processing extends PApplet {
 
     @Override
     public void setup() {
+        windowTitle("Tetris");
         game = new Tetris();
         timer = new Timer();
     }
@@ -41,6 +44,7 @@ public class Processing extends PApplet {
         drawNextPiece();
         drawLevel();
         drawLines();
+        drawControls();
 
         if (timer.hasPassed(TimeUnit.SECONDS.toMillis(1) / 20) && !paused) {
             timer.reset();
@@ -54,11 +58,13 @@ public class Processing extends PApplet {
     public void drawGrid() {
         fill(Color.BLACK.getRGB());
         strokeWeight(1);
-        for (int i = 1; i < Constants.WIDTH; i++) {
-            line(i * Constants.BLOCK_SIZE + Constants.GRID_X_OFFSET, Constants.GRID_Y_OFFSET, i * Constants.BLOCK_SIZE + Constants.GRID_X_OFFSET, Constants.GRID_HEIGHT + Constants.GRID_Y_OFFSET);
-        }
-        for (int i = 1; i < Constants.HEIGHT; i++) {
-            line(Constants.GRID_X_OFFSET, i * Constants.BLOCK_SIZE + Constants.GRID_Y_OFFSET, Constants.GRID_WIDTH + Constants.GRID_X_OFFSET, i * Constants.BLOCK_SIZE + Constants.GRID_Y_OFFSET);
+        if (showGrid) {
+            for (int i = 1; i < Constants.WIDTH; i++) {
+                line(i * Constants.BLOCK_SIZE + Constants.GRID_X_OFFSET, Constants.GRID_Y_OFFSET, i * Constants.BLOCK_SIZE + Constants.GRID_X_OFFSET, Constants.GRID_HEIGHT + Constants.GRID_Y_OFFSET);
+            }
+            for (int i = 1; i < Constants.HEIGHT; i++) {
+                line(Constants.GRID_X_OFFSET, i * Constants.BLOCK_SIZE + Constants.GRID_Y_OFFSET, Constants.GRID_WIDTH + Constants.GRID_X_OFFSET, i * Constants.BLOCK_SIZE + Constants.GRID_Y_OFFSET);
+            }
         }
 
         strokeWeight(3);
@@ -126,8 +132,10 @@ public class Processing extends PApplet {
 
         strokeWeight(1);
         fill(pieceKind.getRgb());
-        for (Vec2 pieceCoordinate : pieceKind.getPieceCoordinates()[0]) {
-            square(x - 10 - ((float) boxSize / 2) + pieceCoordinate.x() * Constants.NEXT_PIECE_BLOCK_SIZE, y - ((float) boxSize / 2) + pieceCoordinate.y() * Constants.NEXT_PIECE_BLOCK_SIZE, Constants.NEXT_PIECE_BLOCK_SIZE);
+        if (showNext) {
+            for (Vec2 pieceCoordinate : pieceKind.getPieceCoordinates()[0]) {
+                square(x - 10 - ((float) boxSize / 2) + pieceCoordinate.x() * Constants.NEXT_PIECE_BLOCK_SIZE, y - ((float) boxSize / 2) + pieceCoordinate.y() * Constants.NEXT_PIECE_BLOCK_SIZE, Constants.NEXT_PIECE_BLOCK_SIZE);
+            }
         }
     }
 
@@ -157,6 +165,27 @@ public class Processing extends PApplet {
 
     }
 
+    public void drawControls() {
+        fill(Color.WHITE.getRGB());
+        strokeWeight(3);
+
+        rect(5, 400, 240, 300);
+
+        fill(Color.BLACK.getRGB());
+        textSize(30);
+        text("Controls", 10, 435);
+
+        textSize(20);
+        text("Move Left - LEFT ARROW", 10, 460);
+        text("Move Right - RIGHT ARROW", 10, 485);
+        text("Rotate - UP ARROW", 10, 510);
+        text("Soft Drop - DOWN ARROW", 10, 535);
+        text("Pause - ENTER", 10, 560);
+        text("Toggle Grid - G", 10, 585);
+        text("Toggle Next - N", 10, 610);
+    }
+
+
     @Override
     public void keyPressed(KeyEvent event) {
         if (event.getKeyCode() == PConstants.UP) {
@@ -173,6 +202,12 @@ public class Processing extends PApplet {
         }
         if (event.getKey() == PConstants.ENTER) {
             paused = !paused;
+        }
+        if (event.getKey() == 'g') {
+            showGrid = !showGrid;
+        }
+        if (event.getKey() == 'n') {
+            showNext = !showNext;
         }
     }
 

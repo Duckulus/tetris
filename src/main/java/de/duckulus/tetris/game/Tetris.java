@@ -17,6 +17,7 @@ public class Tetris {
     private boolean softDrop = false;
     private int clearedLines = 0;
     private int score = 0;
+    private boolean gameOver = false;
 
     public Tetris() {
         board = new PieceKind[Constants.WIDTH * Constants.HEIGHT];
@@ -27,6 +28,11 @@ public class Tetris {
     }
 
     public void tick() {
+        if (gameOver) {
+            currentPiece = null;
+            return;
+        }
+
         tick++;
         int level = clearedLines / 10;
         int dropRate = Math.max(1, 10 - level);
@@ -70,7 +76,11 @@ public class Tetris {
     }
 
     private void spawnPiece() {
+        rotationCount = 0;
         PieceKind pieceKind = bag.get(0);
+        if (!canMove(pieceKind, Vec2.of(Constants.WIDTH / 2, 0), 0)) {
+            gameOver = true;
+        }
         bag.remove(pieceKind);
         if (bag.isEmpty()) {
             refillBag();
