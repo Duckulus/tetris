@@ -1,4 +1,4 @@
-package de.duckulus.tetris;
+package de.duckulus.tetris.utils;
 
 public class Timer {
 

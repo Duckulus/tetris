@@ -4,6 +4,8 @@ import de.duckulus.tetris.game.Piece;
 import de.duckulus.tetris.game.PieceKind;
 import de.duckulus.tetris.game.Tetris;
 import de.duckulus.tetris.math.Vec2;
+import de.duckulus.tetris.utils.StringUtils;
+import de.duckulus.tetris.utils.Timer;
 import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.event.KeyEvent;
@@ -35,6 +37,7 @@ public class Processing extends PApplet {
         drawGrid();
         drawBoard();
         drawCurrentPiece();
+        drawScore();
         drawNextPiece();
         drawLevel();
         drawLines();
@@ -93,6 +96,19 @@ public class Processing extends PApplet {
         }
     }
 
+
+    public void drawScore() {
+        fill(Color.WHITE.getRGB());
+        textSize(30);
+        strokeWeight(3);
+
+        rect(775, 100, 200, 100);
+
+        fill(Color.BLACK.getRGB());
+        text("SCORE", 800, 150);
+        text(StringUtils.padLeftZeros(String.valueOf(game.getScore()), 6), 800, 175);
+    }
+
     public void drawNextPiece() {
         PieceKind pieceKind = game.getNextPiece();
         int x = 825;
@@ -102,7 +118,7 @@ public class Processing extends PApplet {
         fill(Color.WHITE.getRGB());
         textSize(30);
         strokeWeight(3);
-        rect(x - boxSize, y - boxSize - 50, boxSize * 2, boxSize * 2 + 50);
+        rect(775, 400, 100, 150);
 
         fill(Color.BLACK.getRGB());
         text("NEXT", 790, 440);

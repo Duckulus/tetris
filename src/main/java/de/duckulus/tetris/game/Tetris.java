@@ -15,7 +15,8 @@ public class Tetris {
     private final ArrayList<PieceKind> bag;
     int tick = 0;
     private boolean softDrop = false;
-    int clearedLines = 0;
+    private int clearedLines = 0;
+    private int score = 0;
 
     public Tetris() {
         board = new PieceKind[Constants.WIDTH * Constants.HEIGHT];
@@ -118,7 +119,15 @@ public class Tetris {
             }
         }
 
-        clearedLines+=clearedAmount;
+        clearedLines += clearedAmount;
+        int level = clearedLines / 10;
+        score += (level + 1) * switch (clearedAmount) {
+            case 1 -> 40;
+            case 2 -> 100;
+            case 3 -> 300;
+            case 4 -> 1200;
+            default -> 0;
+        };
 
         // move all the lines above the first cleared line down by how many lines have been cleared
         for (int i = firstCleared - 1; i >= 0; i--) {
@@ -164,5 +173,9 @@ public class Tetris {
 
     public int getClearedLines() {
         return clearedLines;
+    }
+
+    public int getScore() {
+        return score;
     }
 }
