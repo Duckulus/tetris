@@ -183,6 +183,8 @@ public class Processing extends PApplet {
         text("Pause - ENTER", 10, 560);
         text("Toggle Grid - G", 10, 585);
         text("Toggle Next - N", 10, 610);
+        text("Restart - R", 10, 635);
+        text("Exit - Esc", 10, 660);
     }
 
 
@@ -208,6 +210,9 @@ public class Processing extends PApplet {
         }
         if (event.getKey() == 'n') {
             showNext = !showNext;
+        }
+        if(event.getKey() == 'r') {
+            game = new Tetris();
         }
     }
 
