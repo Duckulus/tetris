@@ -75,7 +75,7 @@ public class Processing extends PApplet {
     }
 
     public void drawBoard() {
-        strokeWeight(1);
+        strokeWeight(2);
         for (int i = 0; i < game.getBoard().length; i++) {
             int x = i % Constants.WIDTH;
             int y = i / Constants.WIDTH;
@@ -88,13 +88,13 @@ public class Processing extends PApplet {
 
     public void drawCurrentPiece() {
         if (game.getCurrentPiece() == null) return;
-
         Piece piece = game.getCurrentPiece();
         int x = piece.getLocation().x();
         int y = piece.getLocation().y();
         Vec2[] coords = piece.getPieceKind().getPieceCoordinates()[game.getRotationCount()];
 
         fill(piece.getPieceKind().getRgb());
+        strokeWeight(2);
         for (Vec2 coord : coords) {
             int blockX = x + coord.x();
             int blockY = y + coord.y();
