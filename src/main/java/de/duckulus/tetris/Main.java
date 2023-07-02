@@ -1,4 +1,4 @@
-package org.example;
+package de.duckulus.tetris;
 
 import processing.core.PApplet;
 

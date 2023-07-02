@@ -12,5 +12,5 @@ dependencies {
 }
 
 application {
-    mainClass.set("org.example.Main")
+    mainClass.set("de.duckulus.tetris.Main")
 }
