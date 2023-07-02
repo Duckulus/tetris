@@ -3,15 +3,37 @@ package de.duckulus.tetris.game;
 import de.duckulus.tetris.Constants;
 import de.duckulus.tetris.math.Vec2;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+
 public class Tetris {
 
-    private boolean[] board;
+    private final boolean[] board;
     private Piece currentPiece;
     private int rotationCount = 0;
+    private final ArrayList<PieceKind> bag;
 
     public Tetris() {
         board = new boolean[Constants.WIDTH * Constants.HEIGHT];
-        currentPiece = new Piece(PieceKind.Z, Vec2.of(5, 0));
+        bag = new ArrayList<>();
+
+        refillBag();
+        spawnPiece();
+    }
+
+    private void refillBag() {
+        bag.addAll(Arrays.asList(PieceKind.values()));
+        Collections.shuffle(bag);
+    }
+
+    private void spawnPiece() {
+        if (bag.isEmpty()) {
+            refillBag();
+        }
+        PieceKind pieceKind = bag.get(0);
+        bag.remove(pieceKind);
+        currentPiece = new Piece(pieceKind, Vec2.of(Constants.WIDTH / 2, 0));
     }
 
     public void gravityStep() {
@@ -26,6 +48,7 @@ public class Tetris {
                 board[blockLocation.y() * Constants.WIDTH + blockLocation.x()] = true;
             }
             currentPiece = null;
+            spawnPiece();
         }
     }
 
@@ -35,7 +58,7 @@ public class Tetris {
         boolean collision = false;
         for (Vec2 coord : coords) {
             Vec2 newLocation = location.add(coord);
-            if (!isInbounds(newLocation) || board[newLocation.x() * newLocation.y()]) {
+            if (!isInbounds(newLocation) || board[newLocation.y() * Constants.WIDTH + newLocation.x()]) {
                 collision = true;
             }
         }

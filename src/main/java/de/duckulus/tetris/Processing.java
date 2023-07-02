@@ -13,6 +13,7 @@ public class Processing extends PApplet {
 
     private Tetris game;
     private Timer timer;
+    private boolean down;
 
     @Override
     public void settings() {
@@ -34,7 +35,7 @@ public class Processing extends PApplet {
         drawBoard();
         drawCurrentPiece();
 
-        if (timer.hasPassed(500)) {
+        if (timer.hasPassed(down ? 50 : 500)) {
             timer.reset();
             game.gravityStep();
         }
@@ -81,10 +82,22 @@ public class Processing extends PApplet {
     public void keyPressed(KeyEvent event) {
         if (event.getKeyCode() == PConstants.UP) {
             game.rotate();
-        } else if (event.getKeyCode() == PConstants.LEFT) {
+        }
+        if (event.getKeyCode() == PConstants.LEFT) {
             game.moveLeft();
-        } else if (event.getKeyCode() == PConstants.RIGHT) {
+        }
+        if (event.getKeyCode() == PConstants.RIGHT) {
             game.moveRight();
+        }
+        if (event.getKeyCode() == PConstants.DOWN) {
+            down = true;
+        }
+    }
+
+    @Override
+    public void keyReleased(KeyEvent event) {
+        if(event.getKeyCode() == PConstants.DOWN) {
+            down = false;
         }
     }
 }
