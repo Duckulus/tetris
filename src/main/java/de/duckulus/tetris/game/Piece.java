@@ -31,4 +31,8 @@ public class Piece {
                 ", location=" + location +
                 '}';
     }
+
+    public Piece clone() {
+        return new Piece(this.pieceKind, Vec2.of(location.x(), location.y()));
+    }
 }

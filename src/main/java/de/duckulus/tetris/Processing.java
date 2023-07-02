@@ -20,6 +20,7 @@ public class Processing extends PApplet {
     private boolean paused = false;
     private boolean showGrid = true;
     private boolean showNext = true;
+    private boolean showGhostPiece = true;
 
     @Override
     public void settings() {
@@ -40,6 +41,7 @@ public class Processing extends PApplet {
         drawGrid();
         drawBoard();
         drawCurrentPiece();
+        drawGhostPiece();
         drawScore();
         drawNextPiece();
         drawLevel();
@@ -86,20 +88,28 @@ public class Processing extends PApplet {
         }
     }
 
-    public void drawCurrentPiece() {
-        if (game.getCurrentPiece() == null) return;
-        Piece piece = game.getCurrentPiece();
+    public void drawPiece(Piece piece, float alpha) {
+        if (piece == null) return;
         int x = piece.getLocation().x();
         int y = piece.getLocation().y();
         Vec2[] coords = piece.getPieceKind().getPieceCoordinates()[game.getRotationCount()];
 
-        fill(piece.getPieceKind().getRgb());
+        fill(piece.getPieceKind().getRgb(), alpha);
         strokeWeight(2);
         for (Vec2 coord : coords) {
             int blockX = x + coord.x();
             int blockY = y + coord.y();
             square(blockX * Constants.BLOCK_SIZE + Constants.GRID_X_OFFSET, blockY * Constants.BLOCK_SIZE + Constants.GRID_Y_OFFSET, Constants.BLOCK_SIZE);
         }
+    }
+
+    public void drawCurrentPiece() {
+        drawPiece(game.getCurrentPiece(), 255);
+    }
+
+    public void drawGhostPiece() {
+        if (showGhostPiece)
+            drawPiece(game.getGhostPiece(), 50);
     }
 
 
@@ -183,8 +193,9 @@ public class Processing extends PApplet {
         text("Pause - ENTER", 10, 560);
         text("Toggle Grid - G", 10, 585);
         text("Toggle Next - N", 10, 610);
-        text("Restart - R", 10, 635);
-        text("Exit - Esc", 10, 660);
+        text("Toggle Ghost - X", 10, 635);
+        text("Restart - R", 10, 660);
+        text("Exit - Esc", 10, 685);
     }
 
 
@@ -211,7 +222,10 @@ public class Processing extends PApplet {
         if (event.getKey() == 'n') {
             showNext = !showNext;
         }
-        if(event.getKey() == 'r') {
+        if (event.getKey() == 'x') {
+            showGhostPiece = !showGhostPiece;
+        }
+        if (event.getKey() == 'r') {
             game = new Tetris();
         }
     }

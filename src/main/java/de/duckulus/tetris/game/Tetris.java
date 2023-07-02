@@ -11,6 +11,7 @@ public class Tetris {
 
     private final PieceKind[] board;
     private Piece currentPiece;
+    private Piece ghostPiece;
     private int rotationCount = 0;
     private final ArrayList<PieceKind> bag;
     int tick = 0;
@@ -48,6 +49,7 @@ public class Tetris {
         if (canMove(currentPiece.getPieceKind(), currentPiece.getLocation(), newRotationCount)) {
             rotationCount = newRotationCount;
         }
+        updateGhostPiece();
     }
 
     public void moveLeft() {
@@ -56,6 +58,7 @@ public class Tetris {
         if (canMove(currentPiece.getPieceKind(), currentPiece.getLocation().add(Vec2.of(-1, 0)), rotationCount)) {
             currentPiece.setLocation(currentPiece.getLocation().add(Vec2.of(-1, 0)));
         }
+        updateGhostPiece();
     }
 
     public void moveRight() {
@@ -64,6 +67,7 @@ public class Tetris {
         if (canMove(currentPiece.getPieceKind(), currentPiece.getLocation().add(Vec2.of(1, 0)), rotationCount)) {
             currentPiece.setLocation(currentPiece.getLocation().add(Vec2.of(1, 0)));
         }
+        updateGhostPiece();
     }
 
     public void softDrop(boolean softDrop) {
@@ -86,6 +90,7 @@ public class Tetris {
             refillBag();
         }
         currentPiece = new Piece(pieceKind, Vec2.of(Constants.WIDTH / 2, 0));
+        updateGhostPiece();
     }
 
     private void gravityStep() {
@@ -103,6 +108,15 @@ public class Tetris {
             clearLines();
             spawnPiece();
         }
+    }
+
+    private void updateGhostPiece() {
+        if (currentPiece == null) return;
+        Piece ghost = currentPiece.clone();
+        while (canMove(ghost.getPieceKind(), ghost.getLocation().add(Vec2.of(0, 1)), rotationCount)) {
+            ghost.setLocation(ghost.getLocation().add(Vec2.of(0, 1)));
+        }
+        ghostPiece = ghost;
     }
 
     private void clearLines() {
@@ -171,6 +185,10 @@ public class Tetris {
 
     public Piece getCurrentPiece() {
         return currentPiece;
+    }
+
+    public Piece getGhostPiece() {
+        return ghostPiece;
     }
 
     public int getRotationCount() {
