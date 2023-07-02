@@ -15,6 +15,7 @@ public class Tetris {
     private final ArrayList<PieceKind> bag;
     int tick = 0;
     private boolean softDrop = false;
+    int clearedLines = 0;
 
     public Tetris() {
         board = new PieceKind[Constants.WIDTH * Constants.HEIGHT];
@@ -26,7 +27,9 @@ public class Tetris {
 
     public void tick() {
         tick++;
-        if (softDrop || tick % 10 == 0) {
+        int level = clearedLines / 10;
+        int dropRate = Math.max(1, 10 - level);
+        if (softDrop || tick % dropRate == 0) {
             gravityStep();
         }
     }
@@ -66,11 +69,11 @@ public class Tetris {
     }
 
     private void spawnPiece() {
+        PieceKind pieceKind = bag.get(0);
+        bag.remove(pieceKind);
         if (bag.isEmpty()) {
             refillBag();
         }
-        PieceKind pieceKind = bag.get(0);
-        bag.remove(pieceKind);
         currentPiece = new Piece(pieceKind, Vec2.of(Constants.WIDTH / 2, 0));
     }
 
@@ -115,6 +118,8 @@ public class Tetris {
             }
         }
 
+        clearedLines+=clearedAmount;
+
         // move all the lines above the first cleared line down by how many lines have been cleared
         for (int i = firstCleared - 1; i >= 0; i--) {
             for (int j = Constants.WIDTH * i; j < Constants.WIDTH * (i + 1); j++) {
@@ -151,5 +156,13 @@ public class Tetris {
 
     public int getRotationCount() {
         return rotationCount;
+    }
+
+    public PieceKind getNextPiece() {
+        return bag.get(0);
+    }
+
+    public int getClearedLines() {
+        return clearedLines;
     }
 }
