@@ -52,11 +52,11 @@ public class Processing extends PApplet {
     }
 
     public void drawBoard() {
-        fill(Color.CYAN.getRGB());
         for (int i = 0; i < game.getBoard().length; i++) {
             int x = i % Constants.WIDTH;
             int y = i / Constants.WIDTH;
-            if (game.getBoard()[i]) {
+            if (game.getBoard()[i] != null) {
+                fill(game.getBoard()[i].getRgb());
                 square(x * Constants.BLOCK_SIZE, y * Constants.BLOCK_SIZE, Constants.BLOCK_SIZE);
             }
         }
@@ -96,7 +96,7 @@ public class Processing extends PApplet {
 
     @Override
     public void keyReleased(KeyEvent event) {
-        if(event.getKeyCode() == PConstants.DOWN) {
+        if (event.getKeyCode() == PConstants.DOWN) {
             down = false;
         }
     }

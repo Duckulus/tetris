@@ -9,13 +9,13 @@ import java.util.Collections;
 
 public class Tetris {
 
-    private final boolean[] board;
+    private final PieceKind[] board;
     private Piece currentPiece;
     private int rotationCount = 0;
     private final ArrayList<PieceKind> bag;
 
     public Tetris() {
-        board = new boolean[Constants.WIDTH * Constants.HEIGHT];
+        board = new PieceKind[Constants.WIDTH * Constants.HEIGHT];
         bag = new ArrayList<>();
 
         refillBag();
@@ -45,7 +45,7 @@ public class Tetris {
         } else {
             for (Vec2 coord : currentPiece.getPieceKind().getPieceCoordinates()[rotationCount]) {
                 Vec2 blockLocation = currentPiece.getLocation().add(coord);
-                board[blockLocation.y() * Constants.WIDTH + blockLocation.x()] = true;
+                board[blockLocation.y() * Constants.WIDTH + blockLocation.x()] = currentPiece.getPieceKind();
             }
             currentPiece = null;
             spawnPiece();
@@ -58,7 +58,7 @@ public class Tetris {
         boolean collision = false;
         for (Vec2 coord : coords) {
             Vec2 newLocation = location.add(coord);
-            if (!isInbounds(newLocation) || board[newLocation.y() * Constants.WIDTH + newLocation.x()]) {
+            if (!isInbounds(newLocation) || board[newLocation.y() * Constants.WIDTH + newLocation.x()] != null) {
                 collision = true;
             }
         }
@@ -94,7 +94,7 @@ public class Tetris {
         }
     }
 
-    public boolean[] getBoard() {
+    public PieceKind[] getBoard() {
         return board;
     }
 

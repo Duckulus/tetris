@@ -4,7 +4,7 @@ import de.duckulus.tetris.math.Vec2;
 
 public class Piece {
 
-    private PieceKind pieceKind;
+    private final PieceKind pieceKind;
     private Vec2 location;
 
     public Piece(PieceKind pieceKind, Vec2 location) {
