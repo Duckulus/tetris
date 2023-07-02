@@ -8,12 +8,12 @@ import processing.core.PConstants;
 import processing.event.KeyEvent;
 
 import java.awt.*;
+import java.util.concurrent.TimeUnit;
 
 public class Processing extends PApplet {
 
     private Tetris game;
     private Timer timer;
-    private boolean down;
 
     @Override
     public void settings() {
@@ -35,9 +35,9 @@ public class Processing extends PApplet {
         drawBoard();
         drawCurrentPiece();
 
-        if (timer.hasPassed(down ? 50 : 500)) {
+        if (timer.hasPassed(TimeUnit.SECONDS.toMillis(1) / 20)) {
             timer.reset();
-            game.gravityStep();
+            game.tick();
         }
     }
 
@@ -90,14 +90,14 @@ public class Processing extends PApplet {
             game.moveRight();
         }
         if (event.getKeyCode() == PConstants.DOWN) {
-            down = true;
+            game.softDrop(true);
         }
     }
 
     @Override
     public void keyReleased(KeyEvent event) {
         if (event.getKeyCode() == PConstants.DOWN) {
-            down = false;
+            game.softDrop(false);
         }
     }
 }

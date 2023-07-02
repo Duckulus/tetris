@@ -13,6 +13,8 @@ public class Tetris {
     private Piece currentPiece;
     private int rotationCount = 0;
     private final ArrayList<PieceKind> bag;
+    int tick = 0;
+    private boolean softDrop = false;
 
     public Tetris() {
         board = new PieceKind[Constants.WIDTH * Constants.HEIGHT];
@@ -22,51 +24,11 @@ public class Tetris {
         spawnPiece();
     }
 
-    private void refillBag() {
-        bag.addAll(Arrays.asList(PieceKind.values()));
-        Collections.shuffle(bag);
-    }
-
-    private void spawnPiece() {
-        if (bag.isEmpty()) {
-            refillBag();
+    public void tick() {
+        tick++;
+        if (softDrop || tick % 10 == 0) {
+            gravityStep();
         }
-        PieceKind pieceKind = bag.get(0);
-        bag.remove(pieceKind);
-        currentPiece = new Piece(pieceKind, Vec2.of(Constants.WIDTH / 2, 0));
-    }
-
-    public void gravityStep() {
-        if (currentPiece == null) return;
-
-        if (canMove(currentPiece.getPieceKind(), currentPiece.getLocation().add(Vec2.of(0, 1)), rotationCount)) {
-            currentPiece.setLocation(currentPiece.getLocation().add(Vec2.of(0, 1)));
-
-        } else {
-            for (Vec2 coord : currentPiece.getPieceKind().getPieceCoordinates()[rotationCount]) {
-                Vec2 blockLocation = currentPiece.getLocation().add(coord);
-                board[blockLocation.y() * Constants.WIDTH + blockLocation.x()] = currentPiece.getPieceKind();
-            }
-            currentPiece = null;
-            spawnPiece();
-        }
-    }
-
-    public boolean canMove(PieceKind pieceKind, Vec2 location, int rotation) {
-        Vec2[] coords = pieceKind.getPieceCoordinates()[rotation];
-
-        boolean collision = false;
-        for (Vec2 coord : coords) {
-            Vec2 newLocation = location.add(coord);
-            if (!isInbounds(newLocation) || board[newLocation.y() * Constants.WIDTH + newLocation.x()] != null) {
-                collision = true;
-            }
-        }
-        return !collision;
-    }
-
-    public boolean isInbounds(Vec2 coords) {
-        return coords.x() >= 0 && coords.x() < Constants.WIDTH && coords.y() >= 0 && coords.y() < Constants.HEIGHT;
     }
 
     public void rotate() {
@@ -92,6 +54,91 @@ public class Tetris {
         if (canMove(currentPiece.getPieceKind(), currentPiece.getLocation().add(Vec2.of(1, 0)), rotationCount)) {
             currentPiece.setLocation(currentPiece.getLocation().add(Vec2.of(1, 0)));
         }
+    }
+
+    public void softDrop(boolean softDrop) {
+        this.softDrop = softDrop;
+    }
+
+    private void refillBag() {
+        bag.addAll(Arrays.asList(PieceKind.values()));
+        Collections.shuffle(bag);
+    }
+
+    private void spawnPiece() {
+        if (bag.isEmpty()) {
+            refillBag();
+        }
+        PieceKind pieceKind = bag.get(0);
+        bag.remove(pieceKind);
+        currentPiece = new Piece(pieceKind, Vec2.of(Constants.WIDTH / 2, 0));
+    }
+
+    private void gravityStep() {
+        if (currentPiece == null) return;
+
+        if (canMove(currentPiece.getPieceKind(), currentPiece.getLocation().add(Vec2.of(0, 1)), rotationCount)) {
+            currentPiece.setLocation(currentPiece.getLocation().add(Vec2.of(0, 1)));
+
+        } else {
+            for (Vec2 coord : currentPiece.getPieceKind().getPieceCoordinates()[rotationCount]) {
+                Vec2 blockLocation = currentPiece.getLocation().add(coord);
+                board[blockLocation.y() * Constants.WIDTH + blockLocation.x()] = currentPiece.getPieceKind();
+            }
+            currentPiece = null;
+            clearLines();
+            spawnPiece();
+        }
+    }
+
+    private void clearLines() {
+
+        int clearedAmount = 0;
+        int firstCleared = -1;
+
+        //count how many lines have been filled up and clear them
+        for (int i = 0; i < Constants.HEIGHT; i++) {
+            boolean cleared = true;
+            for (int j = Constants.WIDTH * i; j < Constants.WIDTH * (i + 1); j++) {
+                if (board[j] == null) {
+                    cleared = false;
+                    break;
+                }
+            }
+
+            if (cleared) {
+                if (clearedAmount == 0) firstCleared = i;
+                clearedAmount += 1;
+                for (int j = Constants.WIDTH * i; j < Constants.WIDTH * (i + 1); j++) {
+                    board[j] = null;
+                }
+            }
+        }
+
+        // move all the lines above the first cleared line down by how many lines have been cleared
+        for (int i = firstCleared - 1; i >= 0; i--) {
+            for (int j = Constants.WIDTH * i; j < Constants.WIDTH * (i + 1); j++) {
+                board[j + Constants.WIDTH * clearedAmount] = board[j];
+                board[j] = null;
+            }
+        }
+    }
+
+    private boolean canMove(PieceKind pieceKind, Vec2 location, int rotation) {
+        Vec2[] coords = pieceKind.getPieceCoordinates()[rotation];
+
+        boolean collision = false;
+        for (Vec2 coord : coords) {
+            Vec2 newLocation = location.add(coord);
+            if (!isInbounds(newLocation) || board[newLocation.y() * Constants.WIDTH + newLocation.x()] != null) {
+                collision = true;
+            }
+        }
+        return !collision;
+    }
+
+    private boolean isInbounds(Vec2 coords) {
+        return coords.x() >= 0 && coords.x() < Constants.WIDTH && coords.y() >= 0 && coords.y() < Constants.HEIGHT;
     }
 
     public PieceKind[] getBoard() {
