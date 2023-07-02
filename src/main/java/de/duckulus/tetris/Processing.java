@@ -15,6 +15,7 @@ public class Processing extends PApplet {
 
     private Tetris game;
     private Timer timer;
+    private boolean paused = false;
 
     @Override
     public void settings() {
@@ -38,7 +39,7 @@ public class Processing extends PApplet {
         drawLevel();
         drawLines();
 
-        if (timer.hasPassed(TimeUnit.SECONDS.toMillis(1) / 20)) {
+        if (timer.hasPassed(TimeUnit.SECONDS.toMillis(1) / 20) && !paused) {
             timer.reset();
             game.tick();
         }
@@ -101,7 +102,7 @@ public class Processing extends PApplet {
         fill(Color.WHITE.getRGB());
         textSize(30);
         strokeWeight(3);
-        rect(x - boxSize, y - boxSize-50, boxSize * 2, boxSize * 2+50);
+        rect(x - boxSize, y - boxSize - 50, boxSize * 2, boxSize * 2 + 50);
 
         fill(Color.BLACK.getRGB());
         text("NEXT", 790, 440);
@@ -123,7 +124,7 @@ public class Processing extends PApplet {
 
         fill(Color.BLACK.getRGB());
         text("LEVEL", 785, 650);
-        text(game.getClearedLines()/10, 815, 680);
+        text(game.getClearedLines() / 10, 815, 680);
 
     }
 
@@ -153,6 +154,9 @@ public class Processing extends PApplet {
         }
         if (event.getKeyCode() == PConstants.DOWN) {
             game.softDrop(true);
+        }
+        if (event.getKey() == PConstants.ENTER) {
+            paused = !paused;
         }
     }
 
