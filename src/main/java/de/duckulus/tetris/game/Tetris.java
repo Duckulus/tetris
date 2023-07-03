@@ -122,9 +122,7 @@ public class Tetris {
     private void clearLines() {
 
         int clearedAmount = 0;
-        int firstCleared = -1;
 
-        //count how many lines have been filled up and clear them
         for (int i = 0; i < Constants.HEIGHT; i++) {
             boolean cleared = true;
             for (int j = Constants.WIDTH * i; j < Constants.WIDTH * (i + 1); j++) {
@@ -135,11 +133,8 @@ public class Tetris {
             }
 
             if (cleared) {
-                if (clearedAmount == 0) firstCleared = i;
-                clearedAmount += 1;
-                for (int j = Constants.WIDTH * i; j < Constants.WIDTH * (i + 1); j++) {
-                    board[j] = null;
-                }
+                clearLine(i);
+                clearedAmount++;
             }
         }
 
@@ -152,11 +147,16 @@ public class Tetris {
             case 4 -> 1200;
             default -> 0;
         };
+    }
 
-        // move all the lines above the first cleared line down by how many lines have been cleared
-        for (int i = firstCleared - 1; i >= 0; i--) {
+    private void clearLine(int lineIndex) {
+        for (int i = Constants.WIDTH * lineIndex; i < Constants.WIDTH * (lineIndex + 1); i++) {
+            board[i] = null;
+        }
+
+        for (int i = lineIndex - 1; i >= 0; i--) {
             for (int j = Constants.WIDTH * i; j < Constants.WIDTH * (i + 1); j++) {
-                board[j + Constants.WIDTH * clearedAmount] = board[j];
+                board[j + Constants.WIDTH] = board[j];
                 board[j] = null;
             }
         }
