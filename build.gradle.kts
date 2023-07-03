@@ -4,8 +4,8 @@ plugins {
     application
 }
 
-group = "org.example"
-version = "0.1"
+group = "de.duckulus"
+version = "0.2"
 
 dependencies {
     implementation(fileTree("libs") { include("*.jar") })
