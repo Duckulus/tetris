@@ -9,16 +9,20 @@ import java.util.Collections;
 
 public class Tetris {
 
-    private final PieceKind[] board;
+    private PieceKind[] board;
+    private PieceKind[] tempBoard;
     private Piece currentPiece;
     private Piece ghostPiece;
     private int rotationCount = 0;
     private final ArrayList<PieceKind> bag;
     int tick = 0;
     private boolean softDrop = false;
-    private int clearedLines = 0;
+    private int clearedAmount = 0;
     private int score = 0;
     private boolean gameOver = false;
+    private boolean cleared = false;
+    private ArrayList<Integer> clearedLines = new ArrayList<>();
+
 
     public Tetris() {
         board = new PieceKind[Constants.WIDTH * Constants.HEIGHT_TOTAL];
@@ -29,16 +33,24 @@ public class Tetris {
     }
 
     public void tick() {
+        tick++;
+
+
         if (gameOver) {
             currentPiece = null;
             return;
         }
 
-        tick++;
-        int level = clearedLines / 10;
-        int dropRate = Math.max(1, 10 - level);
-        if (softDrop || tick % dropRate == 0) {
-            gravityStep();
+        if (cleared) {
+            cleared = false;
+            board = tempBoard.clone();
+            spawnPiece();
+        } else {
+            int level = clearedAmount / 10;
+            int dropRate = Math.max(1, 10 - level);
+            if (softDrop || tick % dropRate == 0) {
+                gravityStep();
+            }
         }
     }
 
@@ -106,7 +118,9 @@ public class Tetris {
             }
             currentPiece = null;
             clearLines();
-            spawnPiece();
+            if(!cleared) {
+                spawnPiece();
+            }
         }
     }
 
@@ -120,26 +134,36 @@ public class Tetris {
     }
 
     private void clearLines() {
+        clearedLines.clear();
 
         int clearedAmount = 0;
+        PieceKind[] oldBoard = board.clone();
 
         for (int i = 0; i < Constants.HEIGHT_TOTAL; i++) {
-            boolean cleared = true;
+            boolean isFull = true;
             for (int j = Constants.WIDTH * i; j < Constants.WIDTH * (i + 1); j++) {
                 if (board[j] == null) {
-                    cleared = false;
+                    isFull = false;
                     break;
                 }
             }
 
-            if (cleared) {
+            if (isFull) {
+                clearedLines.add(i);
                 clearLine(i);
                 clearedAmount++;
             }
         }
 
-        clearedLines += clearedAmount;
-        int level = clearedLines / 10;
+
+        if (clearedAmount > 0) {
+            cleared = true;
+            tempBoard = board.clone();
+            board = oldBoard;
+        }
+
+        this.clearedAmount += clearedAmount;
+        int level = this.clearedAmount / 10;
         score += (level + 1) * switch (clearedAmount) {
             case 1 -> 40;
             case 2 -> 100;
@@ -199,11 +223,19 @@ public class Tetris {
         return bag.get(0);
     }
 
-    public int getClearedLines() {
-        return clearedLines;
+    public int getClearedAmount() {
+        return clearedAmount;
     }
 
     public int getScore() {
         return score;
+    }
+
+    public boolean isCleared() {
+        return cleared;
+    }
+
+    public ArrayList<Integer> getClearedLines() {
+        return clearedLines;
     }
 }

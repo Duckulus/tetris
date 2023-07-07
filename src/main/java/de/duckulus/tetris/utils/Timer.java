@@ -8,6 +8,10 @@ public class Timer {
         time = System.currentTimeMillis();
     }
 
+    public Timer(long time) {
+        this.time = time;
+    }
+
     public void reset() {
         time = System.currentTimeMillis();
     }

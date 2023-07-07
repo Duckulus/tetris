@@ -17,10 +17,13 @@ public class Processing extends PApplet {
 
     private Tetris game;
     private Timer timer;
+    private Timer animationTimer;
     private boolean paused = false;
     private boolean showGrid = true;
     private boolean showNext = true;
     private boolean showGhostPiece = true;
+    private boolean animationRunning = false;
+    private int animationStage = 0;
 
     @Override
     public void settings() {
@@ -32,6 +35,7 @@ public class Processing extends PApplet {
         windowTitle("Tetris");
         game = new Tetris();
         timer = new Timer();
+        animationTimer = new Timer(0);
     }
 
     @Override
@@ -48,7 +52,20 @@ public class Processing extends PApplet {
         drawLines();
         drawControls();
 
-        if (timer.hasPassed(TimeUnit.SECONDS.toMillis(1) / 20) && !paused) {
+        if (game.isCleared() && !animationRunning) {
+            animationRunning = true;
+        }
+
+        if (animationRunning && animationTimer.hasPassed(50)) {
+            animationTimer.reset();
+            animationStage++;
+            if (animationStage >= 5) {
+                animationRunning = false;
+                animationStage = 0;
+            }
+        }
+
+        if (!animationRunning && timer.hasPassed(TimeUnit.SECONDS.toMillis(1) / 20) && !paused) {
             timer.reset();
             game.tick();
         }
@@ -80,7 +97,9 @@ public class Processing extends PApplet {
         for (int i = Constants.WIDTH * Constants.OUT_OF_SCREEN_LINES; i < game.getBoard().length; i++) {
             int x = i % Constants.WIDTH;
             int y = i / Constants.WIDTH - Constants.OUT_OF_SCREEN_LINES;
-            if (game.getBoard()[i] != null) {
+
+            boolean isHidden = animationRunning && game.getClearedLines().contains(y + Constants.OUT_OF_SCREEN_LINES) && x >= Math.ceil(4.5 - animationStage) && x <= (4.5 + animationStage);
+            if (game.getBoard()[i] != null && !isHidden) {
                 drawBlock(x, y, game.getBoard()[i].getColor(), 255f, true);
             }
         }
@@ -122,7 +141,7 @@ public class Processing extends PApplet {
             rect(baseX, baseY, Constants.BLOCK_SIZE - 3, 3);
 
             fill(color.brighter().getRGB(), alpha);
-            rect(baseX, baseY, 3, Constants.BLOCK_SIZE -3);
+            rect(baseX, baseY, 3, Constants.BLOCK_SIZE - 3);
             rect(baseX, baseY + Constants.BLOCK_SIZE - 5, Constants.BLOCK_SIZE - 4, 3);
         }
     }
@@ -173,7 +192,7 @@ public class Processing extends PApplet {
 
         fill(Color.BLACK.getRGB());
         text("LEVEL", 785, 650);
-        text(game.getClearedLines() / 10, 815, 680);
+        text(game.getClearedAmount() / 10, 815, 680);
 
     }
 
@@ -186,7 +205,7 @@ public class Processing extends PApplet {
 
         fill(Color.BLACK.getRGB());
 
-        text("Lines - " + game.getClearedLines(), 400, 60);
+        text("Lines - " + game.getClearedAmount(), 400, 60);
 
     }
 
