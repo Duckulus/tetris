@@ -5,7 +5,7 @@ import de.duckulus.tetris.math.Vec2;
 import java.awt.*;
 
 public enum PieceKind {
-    I(Color.CYAN.getRGB(), new Vec2[][]{
+    I(Color.CYAN, new Vec2[][]{
             {
                     Vec2.of(0, 1),
                     Vec2.of(1, 1),
@@ -31,7 +31,7 @@ public enum PieceKind {
                     Vec2.of(1, 3)
             }
     }),
-    J(Color.BLUE.getRGB(), new Vec2[][]{
+    J(Color.BLUE, new Vec2[][]{
             {
                     Vec2.of(0, 0),
                     Vec2.of(0, 1),
@@ -57,7 +57,7 @@ public enum PieceKind {
                     Vec2.of(0, 2)
             }
     }),
-    L(Color.ORANGE.getRGB(), new Vec2[][]{
+    L(Color.ORANGE, new Vec2[][]{
             {
                     Vec2.of(2, 0),
                     Vec2.of(0, 1),
@@ -83,7 +83,7 @@ public enum PieceKind {
                     Vec2.of(0, 0)
             }
     }),
-    O(Color.YELLOW.getRGB(), new Vec2[][]{
+    O(Color.YELLOW, new Vec2[][]{
             {
                     Vec2.of(0, 0),
                     Vec2.of(0, 1),
@@ -109,7 +109,7 @@ public enum PieceKind {
                     Vec2.of(1, 1)
             }
     }),
-    S(Color.GREEN.getRGB(), new Vec2[][]{
+    S(Color.GREEN, new Vec2[][]{
             {
                     Vec2.of(1, 0),
                     Vec2.of(2, 0),
@@ -135,7 +135,7 @@ public enum PieceKind {
                     Vec2.of(1, 2)
             }
     }),
-    T(Color.MAGENTA.getRGB(), new Vec2[][]{
+    T(Color.MAGENTA, new Vec2[][]{
             {
                     Vec2.of(1, 0),
                     Vec2.of(0, 1),
@@ -161,7 +161,7 @@ public enum PieceKind {
                     Vec2.of(0, 1)
             }
     }),
-    Z(Color.RED.getRGB(), new Vec2[][]{
+    Z(Color.RED, new Vec2[][]{
             {
                     Vec2.of(0, 0),
                     Vec2.of(1, 0),
@@ -188,17 +188,17 @@ public enum PieceKind {
             }
     });
 
-    private final int rgb;
+    private final Color color;
     private final Vec2[][] pieceCoordinates;
 
-    PieceKind(int rgb, Vec2[][] pieceCoordinates) {
-        this.rgb = rgb;
+    PieceKind(Color color, Vec2[][] pieceCoordinates) {
+        this.color = color;
         this.pieceCoordinates = pieceCoordinates;
     }
 
 
-    public int getRgb() {
-        return rgb;
+    public Color getColor() {
+        return color;
     }
 
     public Vec2[][] getPieceCoordinates() {

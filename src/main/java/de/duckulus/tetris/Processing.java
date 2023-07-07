@@ -77,40 +77,54 @@ public class Processing extends PApplet {
     }
 
     public void drawBoard() {
-        strokeWeight(2);
         for (int i = Constants.WIDTH * Constants.OUT_OF_SCREEN_LINES; i < game.getBoard().length; i++) {
             int x = i % Constants.WIDTH;
             int y = i / Constants.WIDTH - Constants.OUT_OF_SCREEN_LINES;
             if (game.getBoard()[i] != null) {
-                fill(game.getBoard()[i].getRgb());
-                square(x * Constants.BLOCK_SIZE + Constants.GRID_X_OFFSET, y * Constants.BLOCK_SIZE + Constants.GRID_Y_OFFSET, Constants.BLOCK_SIZE);
+                drawBlock(x, y, game.getBoard()[i].getColor(), 255f, true);
             }
         }
     }
 
-    public void drawPiece(Piece piece, float alpha) {
+    public void drawPiece(Piece piece, float alpha, boolean glint) {
         if (piece == null) return;
         int x = piece.getLocation().x();
         int y = piece.getLocation().y() - Constants.OUT_OF_SCREEN_LINES;
         Vec2[] coords = piece.getPieceKind().getPieceCoordinates()[game.getRotationCount()];
 
-        fill(piece.getPieceKind().getRgb(), alpha);
-        strokeWeight(2);
         for (Vec2 coord : coords) {
             int blockX = x + coord.x();
             int blockY = y + coord.y();
-            if (blockY >= 0)
-                square(blockX * Constants.BLOCK_SIZE + Constants.GRID_X_OFFSET, blockY * Constants.BLOCK_SIZE + Constants.GRID_Y_OFFSET, Constants.BLOCK_SIZE);
+            if (blockY >= 0) drawBlock(blockX, blockY, piece.getPieceKind().getColor(), alpha, glint);
         }
     }
 
     public void drawCurrentPiece() {
-        drawPiece(game.getCurrentPiece(), 255);
+        drawPiece(game.getCurrentPiece(), 255, true);
     }
 
     public void drawGhostPiece() {
-        if (showGhostPiece)
-            drawPiece(game.getGhostPiece(), 50);
+        if (showGhostPiece) drawPiece(game.getGhostPiece(), 50, false);
+    }
+
+    private void drawBlock(int blockX, int blockY, Color color, float alpha, boolean glint) {
+        strokeWeight(2);
+        fill(color.getRGB(), alpha);
+        square(blockX * Constants.BLOCK_SIZE + Constants.GRID_X_OFFSET, blockY * Constants.BLOCK_SIZE + Constants.GRID_Y_OFFSET, Constants.BLOCK_SIZE);
+
+        if (glint) {
+            strokeWeight(0);
+            int baseX = blockX * Constants.BLOCK_SIZE + Constants.GRID_X_OFFSET + 2;
+            int baseY = blockY * Constants.BLOCK_SIZE + Constants.GRID_Y_OFFSET + 2;
+
+            fill(color.darker().getRGB(), alpha);
+            rect(baseX + Constants.BLOCK_SIZE - 5, baseY, 3, Constants.BLOCK_SIZE - 4);
+            rect(baseX, baseY, Constants.BLOCK_SIZE - 3, 3);
+
+            fill(color.brighter().getRGB(), alpha);
+            rect(baseX, baseY, 3, Constants.BLOCK_SIZE -3);
+            rect(baseX, baseY + Constants.BLOCK_SIZE - 5, Constants.BLOCK_SIZE - 4, 3);
+        }
     }
 
 
@@ -142,7 +156,7 @@ public class Processing extends PApplet {
 
 
         strokeWeight(1);
-        fill(pieceKind.getRgb());
+        fill(pieceKind.getColor().getRGB());
         if (showNext) {
             for (Vec2 pieceCoordinate : pieceKind.getPieceCoordinates()[0]) {
                 square(x - 10 - ((float) boxSize / 2) + pieceCoordinate.x() * Constants.NEXT_PIECE_BLOCK_SIZE, y - ((float) boxSize / 2) + pieceCoordinate.y() * Constants.NEXT_PIECE_BLOCK_SIZE, Constants.NEXT_PIECE_BLOCK_SIZE);
