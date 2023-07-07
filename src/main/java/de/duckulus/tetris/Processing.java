@@ -3,17 +3,19 @@ package de.duckulus.tetris;
 import de.duckulus.tetris.game.Piece;
 import de.duckulus.tetris.game.PieceKind;
 import de.duckulus.tetris.game.Tetris;
+import de.duckulus.tetris.game.TetrisListener;
 import de.duckulus.tetris.math.Vec2;
 import de.duckulus.tetris.utils.StringUtils;
 import de.duckulus.tetris.utils.Timer;
 import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.event.KeyEvent;
+import processing.sound.SoundFile;
 
 import java.awt.*;
 import java.util.concurrent.TimeUnit;
 
-public class Processing extends PApplet {
+public class Processing extends PApplet implements TetrisListener {
 
     private Tetris game;
     private Timer timer;
@@ -24,6 +26,9 @@ public class Processing extends PApplet {
     private boolean showGhostPiece = true;
     private boolean animationRunning = false;
     private int animationStage = 0;
+    private SoundFile landSound;
+    private SoundFile gameOverSound;
+    private SoundFile lineClearSound;
 
     @Override
     public void settings() {
@@ -33,9 +38,12 @@ public class Processing extends PApplet {
     @Override
     public void setup() {
         windowTitle("Tetris");
-        game = new Tetris();
+        initializeGame();
         timer = new Timer();
         animationTimer = new Timer(0);
+        landSound = new SoundFile(this, "land.wav");
+        gameOverSound = new SoundFile(this, "gameOver.wav");
+        lineClearSound = new SoundFile(this, "lineClear.wav");
     }
 
     @Override
@@ -260,7 +268,7 @@ public class Processing extends PApplet {
             showGhostPiece = !showGhostPiece;
         }
         if (event.getKey() == 'r') {
-            game = new Tetris();
+            initializeGame();
         }
     }
 
@@ -269,5 +277,25 @@ public class Processing extends PApplet {
         if (event.getKeyCode() == PConstants.DOWN) {
             game.softDrop(false);
         }
+    }
+
+    private void initializeGame() {
+        game = new Tetris();
+        game.registerListener(this);
+    }
+
+    @Override
+    public void onPieceLand() {
+        landSound.play();
+    }
+
+    @Override
+    public void onLineClear(int clearedAmount) {
+        lineClearSound.play();
+    }
+
+    @Override
+    public void onGameOver() {
+        gameOverSound.play();
     }
 }

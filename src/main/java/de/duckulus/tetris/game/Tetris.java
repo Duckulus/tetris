@@ -6,6 +6,7 @@ import de.duckulus.tetris.math.Vec2;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 public class Tetris {
 
@@ -21,12 +22,14 @@ public class Tetris {
     private int score = 0;
     private boolean gameOver = false;
     private boolean cleared = false;
-    private ArrayList<Integer> clearedLines = new ArrayList<>();
+    private final ArrayList<Integer> clearedLines = new ArrayList<>();
+    private final List<TetrisListener> listeners;
 
 
     public Tetris() {
         board = new PieceKind[Constants.WIDTH * Constants.HEIGHT_TOTAL];
         bag = new ArrayList<>();
+        listeners = new ArrayList<>();
 
         refillBag();
         spawnPiece();
@@ -96,6 +99,9 @@ public class Tetris {
         PieceKind pieceKind = bag.get(0);
         if (!canMove(pieceKind, Vec2.of(Constants.WIDTH / 2, 0), 0)) {
             gameOver = true;
+            for (TetrisListener listener : listeners) {
+                listener.onGameOver();
+            }
         }
         bag.remove(pieceKind);
         if (bag.isEmpty()) {
@@ -116,9 +122,12 @@ public class Tetris {
                 Vec2 blockLocation = currentPiece.getLocation().add(coord);
                 board[blockLocation.y() * Constants.WIDTH + blockLocation.x()] = currentPiece.getPieceKind();
             }
+            for (TetrisListener listener : listeners) {
+                listener.onPieceLand();
+            }
             currentPiece = null;
             clearLines();
-            if(!cleared) {
+            if (!cleared) {
                 spawnPiece();
             }
         }
@@ -156,7 +165,12 @@ public class Tetris {
         }
 
 
+
         if (clearedAmount > 0) {
+            for (TetrisListener listener : listeners) {
+                listener.onLineClear(clearedAmount);
+            }
+
             cleared = true;
             tempBoard = board.clone();
             board = oldBoard;
@@ -238,4 +252,13 @@ public class Tetris {
     public ArrayList<Integer> getClearedLines() {
         return clearedLines;
     }
+
+    public void registerListener(TetrisListener listener) {
+        listeners.add(listener);
+    }
+
+    public void unregisterListener(TetrisListener listener) {
+        listeners.remove(listener);
+    }
+
 }
