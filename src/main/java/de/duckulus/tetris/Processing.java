@@ -78,9 +78,9 @@ public class Processing extends PApplet {
 
     public void drawBoard() {
         strokeWeight(2);
-        for (int i = 0; i < game.getBoard().length; i++) {
+        for (int i = Constants.WIDTH * Constants.OUT_OF_SCREEN_LINES; i < game.getBoard().length; i++) {
             int x = i % Constants.WIDTH;
-            int y = i / Constants.WIDTH;
+            int y = i / Constants.WIDTH - Constants.OUT_OF_SCREEN_LINES;
             if (game.getBoard()[i] != null) {
                 fill(game.getBoard()[i].getRgb());
                 square(x * Constants.BLOCK_SIZE + Constants.GRID_X_OFFSET, y * Constants.BLOCK_SIZE + Constants.GRID_Y_OFFSET, Constants.BLOCK_SIZE);
@@ -91,7 +91,7 @@ public class Processing extends PApplet {
     public void drawPiece(Piece piece, float alpha) {
         if (piece == null) return;
         int x = piece.getLocation().x();
-        int y = piece.getLocation().y();
+        int y = piece.getLocation().y() - Constants.OUT_OF_SCREEN_LINES;
         Vec2[] coords = piece.getPieceKind().getPieceCoordinates()[game.getRotationCount()];
 
         fill(piece.getPieceKind().getRgb(), alpha);
@@ -99,7 +99,8 @@ public class Processing extends PApplet {
         for (Vec2 coord : coords) {
             int blockX = x + coord.x();
             int blockY = y + coord.y();
-            square(blockX * Constants.BLOCK_SIZE + Constants.GRID_X_OFFSET, blockY * Constants.BLOCK_SIZE + Constants.GRID_Y_OFFSET, Constants.BLOCK_SIZE);
+            if (blockY >= 0)
+                square(blockX * Constants.BLOCK_SIZE + Constants.GRID_X_OFFSET, blockY * Constants.BLOCK_SIZE + Constants.GRID_Y_OFFSET, Constants.BLOCK_SIZE);
         }
     }
 

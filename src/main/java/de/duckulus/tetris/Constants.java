@@ -13,6 +13,10 @@ public class Constants {
     public static int GRID_X_OFFSET = 250;
     public static int GRID_Y_OFFSET = 100;
 
+    public static int OUT_OF_SCREEN_LINES = 2;
+
+    public static int HEIGHT_TOTAL = HEIGHT + OUT_OF_SCREEN_LINES;
+
     public static int NEXT_PIECE_BLOCK_SIZE = 20;
 
 }

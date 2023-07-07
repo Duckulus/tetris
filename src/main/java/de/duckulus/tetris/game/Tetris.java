@@ -21,7 +21,7 @@ public class Tetris {
     private boolean gameOver = false;
 
     public Tetris() {
-        board = new PieceKind[Constants.WIDTH * Constants.HEIGHT];
+        board = new PieceKind[Constants.WIDTH * Constants.HEIGHT_TOTAL];
         bag = new ArrayList<>();
 
         refillBag();
@@ -123,7 +123,7 @@ public class Tetris {
 
         int clearedAmount = 0;
 
-        for (int i = 0; i < Constants.HEIGHT; i++) {
+        for (int i = 0; i < Constants.HEIGHT_TOTAL; i++) {
             boolean cleared = true;
             for (int j = Constants.WIDTH * i; j < Constants.WIDTH * (i + 1); j++) {
                 if (board[j] == null) {
@@ -176,7 +176,7 @@ public class Tetris {
     }
 
     private boolean isInbounds(Vec2 coords) {
-        return coords.x() >= 0 && coords.x() < Constants.WIDTH && coords.y() >= 0 && coords.y() < Constants.HEIGHT;
+        return coords.x() >= 0 && coords.x() < Constants.WIDTH && coords.y() >= 0 && coords.y() < Constants.HEIGHT_TOTAL;
     }
 
     public PieceKind[] getBoard() {
